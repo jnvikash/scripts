@@ -1,42 +1,47 @@
 name: Deploy Application
-
 on:
   push:
     branches:
       - dev
       - qa
       - prod
+  pull_request:
+    types:
+      - closed
+    branches:
+      - dev
+      - qa
+      - prod
+  
 
 jobs:
-  deploy:
+  if_merged:
+    if: github.event.pull_request.merged == true
     runs-on: self-hosted
-
     steps:
-    # Checkout the code
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    # Set up environment variables
-    - name: Set Environment Variables
-      run: |
-        if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-          echo "ENV=Dev" >> $GITHUB_ENV
-        elif [[ "${{ github.ref }}" == "refs/heads/qa" ]]; then
-          echo "ENV=QA" >> $GITHUB_ENV
-        elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
-          echo "ENV=Prod" >> $GITHUB_ENV
-        fi
-
+      - name: Set Environment Variables
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "ENV=Dev" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == "refs/heads/qa" ]]; then
+            echo "ENV=QA" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+            echo "ENV=Prod" >> $GITHUB_ENV
+          fi
+          
     # Build the application
-    - name: Build Application
-      run: |
-        echo "Building application for $ENV environment..."
-        # Add your build commands here
-        # e.g., npm install && npm run build
+      - name: Build Application
+        run: |
+          echo "Building application for $ENV environment..."
+          # Add your build commands here
+          # e.g., npm install && npm run build
 
-    # Deploy the application
-    - name: Deploy Application
-      run: |
-        echo "Deploying to $ENV environment..."
-        # Add your deployment commands here
-        # For example, scp files to the server or call deployment scripts
+      # Deploy the application
+      - name: Deploy Application
+        run: |
+          echo "Deploying to $ENV environment..."
+          # Add your deployment commands here
+          # For example, scp files to the server or call deployment scripts
