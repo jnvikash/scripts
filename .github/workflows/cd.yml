@@ -1,10 +1,10 @@
 name: Deploy Application
 on:
-  push:
-    branches:
-      - dev
-      - qa
-      - prod
+  # push:
+  #   branches:
+  #     - dev
+  #     - qa
+  #     - prod
   pull_request:
     types:
       - closed
